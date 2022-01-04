@@ -1,0 +1,26 @@
+from confluent_kafka import Producer
+import socket
+import requests
+import time
+
+conf = {'bootstrap.servers': "xxxx.aws.confluent.cloud:9092",
+        'security.protocol': "SASL_SSL",
+        'sasl.mechanisms': "PLAIN",
+        'sasl.username': "xxxxxx",
+        'sasl.password': "xxxxxxxxxxxxxx",
+        'client.id': socket.gethostname()}
+topic = 'mfg'
+producer = Producer(conf)
+
+
+for x in range(10):
+        response = requests.get("https://my.api.mockaroo.com/Manufacturing_Plants.json?key=xxxxxx")
+
+        payload = response.text
+ 
+        producer.produce(topic, key="key", value=payload)
+        producer.flush()
+        print('Payload sent...')
+
+        # Wait for 5 seconds
+        #time.sleep(5)
